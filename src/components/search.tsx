@@ -79,7 +79,7 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
   return (
     <Container>
       <Row>
-        <Col sm={2}>
+        <Col sm={4}>
           <Form onSubmit={handleSearchSubmit}>
             <FormGroup className="mb-3">
               <FormControl type="text" placeholder='Hakusana' value={searchTerm} onChange={handleSearchTermChange} />

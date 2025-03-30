@@ -5,13 +5,13 @@ import Col from 'react-bootstrap/Col';
 
 const Footer: React.FC = () => {
   return (
-      <Container>
+    <Container>
         <Row>
-          <Col className="text-center text-light">
+            <Col className="text-center text-light">
             <p>&copy; {new Date().getFullYear()} JE Library.</p>
-          </Col>
+            </Col>
         </Row>
-      </Container>
+    </Container>
   );
 };
 

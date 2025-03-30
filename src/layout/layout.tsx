@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className="content">
         {children}
       </main>
-      <footer>
+      <footer className="bg-dark py-3">
         <Footer />
       </footer>
     </div>
