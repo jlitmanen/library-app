@@ -1,26 +1,25 @@
-import React, { ChangeEvent, ChangeEventHandler } from 'react';
+import React from 'react';
 import Pagination from 'react-bootstrap/Pagination';
 import Form from 'react-bootstrap/Form';
-import { FormControl } from 'react-bootstrap';
+import { FormControl, Row, Col } from 'react-bootstrap';
 
 interface PaginationProps {
-    currentPage: number;
-    totalPages: number;
-    maxPageNumbers: number;
-    onPageChange: (pageNumber: number) => void;
-    booksPerPage: number;
-    onBooksPerPageChange: (booksPerPage: number) => void;
-  }
+  currentPage: number;
+  totalPages: number;
+  maxPageNumbers: number;
+  onPageChange: (pageNumber: number) => void;
+  booksPerPage: number;
+  onBooksPerPageChange: (booksPerPage: number) => void;
+}
 
-
-  const PaginationComponent: React.FC<PaginationProps> = ({
-    currentPage,
-    totalPages,
-    maxPageNumbers,
-    onPageChange,
-    booksPerPage,
-    onBooksPerPageChange,
-  }) => {
+const PaginationComponent: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  maxPageNumbers,
+  onPageChange,
+  booksPerPage,
+  onBooksPerPageChange,
+}) => {
   const renderPageNumbers = () => {
     const pageNumbers = [];
 
@@ -73,35 +72,35 @@ interface PaginationProps {
     return pageNumbers;
   };
 
-
   const handleBooksPerPageChange = (event: any) => {
     onBooksPerPageChange(Number((event.target as HTMLSelectElement).value));
   };
 
   return (
-    <>
-      <Form.Group>
-        <Form.Label>Teoksia per sivu:</Form.Label>
-        <FormControl
-          as="select"
-          value={booksPerPage}
-          onChange={handleBooksPerPageChange}
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={100}>100</option>
-        </FormControl>
-      </Form.Group>
+    <Row className="justify-content-center align-items-center">
+      <Col xs={12} md={6} className="mb-3">
+        <Form.Group>
+            <FormControl
+                as="select"
+                value={booksPerPage}
+                onChange={handleBooksPerPageChange}
+            >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={100}>100</option>
+            </FormControl>    
 
-      <Pagination>
-        <Pagination.First onClick={() => onPageChange(1)} disabled={currentPage === 1} />
-        <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} />
-        {renderPageNumbers()}
-        <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-        <Pagination.Last onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages} />
-      </Pagination>
-    </>
+            <Pagination className="justify-content-center">
+            <Pagination.First onClick={() => onPageChange(1)} disabled={currentPage === 1} />
+            <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} />
+            {renderPageNumbers()}
+            <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+            <Pagination.Last onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages} />
+            </Pagination>
+        </Form.Group>
+      </Col>
+    </Row>
   );
 };
 

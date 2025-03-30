@@ -41,7 +41,7 @@ const BookTable: React.FC<BookTableProps> = ({ data }) => {
 
   return (
     <>
-      <Table striped bordered hover>
+      <Table striped bordered hover responsive>
         <thead>
           <tr>
             <th>Otsikko</th>
