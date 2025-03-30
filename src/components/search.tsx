@@ -1,15 +1,14 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { booksSearch, parameters, filters, orders } from '../constants/index';
 import { Book } from './types';
-import { Table, Button, Form, FormControl, FormLabel, FormGroup, FormSelect, Container, Col, Row } from 'react-bootstrap';
+import { Table, Button, Form, FormControl, FormGroup, FormSelect, Container, Col, Row } from 'react-bootstrap';
 import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 interface SearchComponentProps {
-  onBooksFound: (books: Book[]) => void;
 }
 
-const SearchComponent: React.FC<SearchComponentProps> = ({ onBooksFound }) => {
+const SearchComponent: React.FC<SearchComponentProps> = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchParameter, setSearchParameter] = useState(parameters.title);
   const [searchFilter, setSearchFilter] = useState(filters.all);
