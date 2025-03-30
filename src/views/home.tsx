@@ -3,29 +3,31 @@ import { collection, getDocs } from 'firebase/firestore';
 import { Form, FormControl, Row, Col } from 'react-bootstrap';
 import BookTable from '../components/table';
 import { Book } from '../components/types';
-//import { generateTestData } from './testdata';
-import  { db } from '../../firebase'
+import { db } from '../../firebase';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from '../auth/authcontext';
 
 function Home() {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
-      const querySnapshot = await getDocs(collection(db, 'books'));
-      const booksData: Book[] = [];
-      querySnapshot.forEach((doc) => {
-        booksData.push({ id: doc.id, ...doc.data() } as Book);
-      });
-      setBooks(booksData);
+      if (user) { // Tarkista, onko käyttäjä kirjautunut sisään
+        const querySnapshot = await getDocs(collection(db, 'books'));
+        const booksData: Book[] = [];
+        querySnapshot.forEach((doc) => {
+          booksData.push({ id: doc.id, ...doc.data() } as Book);
+        });
+        setBooks(booksData);
+      } else {
+        setBooks([]); // Tyhjennä kirjalista, jos käyttäjä ei ole kirjautunut sisään
+      }
     }
-    // for testing
-    //const testData = generateTestData(1000); // Luo 100 000 kirjaa
-    //setBooks(testData);
 
     fetchData();
-  }, []);
+  }, [user]); // Lisää user riippuvuudeksi, jotta efekti ajetaan uudelleen, kun käyttäjän tila muuttuu
 
   const filterBooks = () => {
     return books.filter((book) =>

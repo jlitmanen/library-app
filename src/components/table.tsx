@@ -39,6 +39,10 @@ const BookTable: React.FC<BookTableProps> = ({ data }) => {
     setCurrentPage(1);
   };
 
+  if (data.length === 0) {
+    return <p>Kirjaudu sisään nähdäksesi kirjat!</p>;
+  }
+
   return (
     <>
       <Table striped bordered hover responsive>
