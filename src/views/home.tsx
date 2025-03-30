@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { Form, FormControl, Row, Col } from 'react-bootstrap';
+import { Form, FormControl, Row, Col, Container } from 'react-bootstrap';
 import BookTable from '../components/table';
 import { Book } from '../components/types';
 import { db } from '../../firebase';
@@ -39,23 +39,25 @@ function Home() {
   };
 
   return (
-    <Row>
-      <Col>
-        <div>
-          <Form className="d-flex mb-3">
-            <FormControl
-              type="search"
-              placeholder="Hae kirjoja..."
-              className="mr-2"
-              aria-label="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </Form>
-          <BookTable data={filterBooks()} />
-        </div>
-      </Col>
-    </Row>
+    <Container>
+        <Row>
+        <Col>
+            <div>
+            <Form className="d-flex mb-3">
+                <FormControl
+                type="search"
+                placeholder="Hae kirjoja..."
+                className="mr-2"
+                aria-label="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </Form>
+            <BookTable data={filterBooks()} />
+            </div>
+        </Col>
+        </Row>
+    </Container>
   );
 }
 

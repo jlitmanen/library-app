@@ -13,7 +13,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" fixed="top" expanded={expanded}>
+    <Navbar bg="dark" variant="dark" expand="lg" expanded={expanded}>
       <Container>
         <Navbar.Brand href="/" onClick={() => setExpanded(false)}>JE Library</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" onClick={handleToggle} />
