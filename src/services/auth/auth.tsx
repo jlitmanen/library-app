@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { auth } from '../../firebase'; // Importoi auth-instanssi
+import { auth } from '../../../firebase'; // Importoi auth-instanssi
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const Auth: React.FC = () => {

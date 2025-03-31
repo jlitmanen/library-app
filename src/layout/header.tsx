@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import LoginFormModal from '../components/login';
-import { useAuth } from '../auth/authcontext';
+import { useAuth } from '../services/auth/authcontext';
 
 const Header: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { auth } from '../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useAuth } from '../auth/authcontext'; // Importoi useAuth hook
+import { useAuth } from '../services/auth/authcontext'; // Importoi useAuth hook
 
 interface LoginFormModalProps {
   show: boolean;

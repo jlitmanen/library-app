@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { booksSearch, parameters, filters, orders } from '../constants/index';
+import { parameters, filters, orders } from '../constants/index';
 import { Book } from './types';
-import { Table, Button, Form, FormControl, FormGroup, FormSelect, Container, Col, Row } from 'react-bootstrap';
-import { db } from '../../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { Container, Col, Row, Spinner } from 'react-bootstrap';
+import BookSearchService from '../services/booksearchservice';
+import BookTable from './table';
+import SearchForm from './searchform';
 
-interface SearchComponentProps {
-}
+interface SearchComponentProps {}
 
 const SearchComponent: React.FC<SearchComponentProps> = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +14,8 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
   const [searchFilter, setSearchFilter] = useState(filters.all);
   const [searchOrder, setSearchOrder] = useState(orders.relevance);
   const [searchResults, setSearchResults] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const bookService = new BookSearchService();
 
   const handleSearchTermChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -33,114 +35,53 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
 
   const handleSearchSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    setIsLoading(true);
     try {
-      const url = booksSearch(searchParameter, searchFilter, searchOrder, searchTerm);
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.items) {
-        const books = data.items.map((item: any) => ({
-          id: item.id,
-          book: item.volumeInfo.title,
-          author: item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : 'Tuntematon tekijä',
-          published: item.volumeInfo.publishedDate,
-          isbn: item.volumeInfo.industryIdentifiers ? item.volumeInfo.industryIdentifiers.map((identifier: any) => identifier.identifier).join(', ') : 'Ei ISBN:ää',
-          description: item.volumeInfo.description,
-          thumbnail: item.volumeInfo.imageLinks?.thumbnail,
-        }));
-        setSearchResults(books);
-      } else {
-        setSearchResults([]);
-      }
-    } catch (error) {
-      console.error('Virhe haussa:', error);
-      setSearchResults([]);
+      const books = await bookService.searchBooks(searchTerm, searchParameter, searchFilter, searchOrder);
+      setSearchResults(books);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSendBookToFirebase = async (book: Book) => {
-    try {
-      const booksCollection = collection(db, 'books');
-      await addDoc(booksCollection, {
-        id: book.id,
-        author: book.author,
-        book: book.book,
-        description: book.description ? book.description : '',
-        isbn: book.isbn,
-        published: book.published,
-      });
-      alert('Kirja lähetetty Firebaseen onnistuneesti!');
-    } catch (error) {
-      console.error('Virhe kirjan lähettämisessä Firebaseen:', error);
-      alert('Virhe kirjan lähettämisessä Firebaseen.');
-    }
+    await bookService.sendBookToFirebase(book);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setSearchResults([]);
   };
 
   return (
     <Container>
       <Row>
         <Col sm={4}>
-          <Form onSubmit={handleSearchSubmit}>
-            <FormGroup className="mb-3">
-              <FormControl type="text" placeholder='Hakusana' value={searchTerm} onChange={handleSearchTermChange} />
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <FormSelect value={searchParameter} onChange={handleParameterChange}>
-                {Object.entries(parameters).map(([key, value]) => (
-                  <option key={key} value={value}>
-                    {key}
-                  </option>
-                ))}
-              </FormSelect>
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <FormSelect value={searchFilter} onChange={handleFilterChange}>
-                {Object.entries(filters).map(([key, value]) => (
-                  <option key={key} value={value}>
-                    {key}
-                  </option>
-                ))}
-              </FormSelect>
-            </FormGroup>
-            <FormGroup className="mb-3">
-              <FormSelect value={searchOrder} onChange={handleOrderChange}>
-                {Object.entries(orders).map(([key, value]) => (
-                  <option key={key} value={value}>
-                    {key}
-                  </option>
-                ))}
-              </FormSelect>
-            </FormGroup>
-            <Button variant="primary" type="submit">Hae</Button>
-          </Form>
-      </Col>
-      <Col sm={8}>
-        {searchResults.length > 0 && (
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Otsikko</th>
-                <th>Tekijä</th>
-                <th>Julkaisuvuosi</th>
-                <th>ISBN</th>
-                <th>Toiminnot</th>
-              </tr>
-            </thead>
-            <tbody>
-              {searchResults.map((book) => (
-                <tr key={book.id}>
-                  <td>{book.book}</td>
-                  <td>{book.author}</td>
-                  <td>{book.published}</td>
-                  <td>{book.isbn}</td>
-                  <td>
-                    <Button variant="success" onClick={() => handleSendBookToFirebase(book)}>Lähetä</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
+          <SearchForm
+            searchTerm={searchTerm}
+            searchParameter={searchParameter}
+            searchFilter={searchFilter}
+            searchOrder={searchOrder}
+            isLoading={isLoading}
+            onSearchTermChange={handleSearchTermChange}
+            onParameterChange={handleParameterChange}
+            onFilterChange={handleFilterChange}
+            onOrderChange={handleOrderChange}
+            onSearchSubmit={handleSearchSubmit}
+            onClearSearch={handleClearSearch}
+          />
+        </Col>
+        <Col sm={8}>
+          {isLoading && (
+            <div className="text-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Ladataan...</span>
+              </Spinner>
+            </div>
+          )}
+          {searchResults.length > 0 && !isLoading && (
+            <BookTable data={searchResults} search={true} onSendBookToFirebase={handleSendBookToFirebase} />
+          )}
         </Col>
       </Row>
     </Container>

@@ -7,9 +7,11 @@ import ModalComponent from './modal';
 
 interface BookTableProps {
   data: Book[];
+  search?: boolean;
+  onSendBookToFirebase?: (book: Book) => void; // Lisätty funktio lähettämistä varten
 }
 
-const BookTable: React.FC<BookTableProps> = ({ data }) => {
+const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookToFirebase }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +54,7 @@ const BookTable: React.FC<BookTableProps> = ({ data }) => {
             <th>Tekijä</th>
             <th>Vuosi</th>
             <th>ISBN</th>
-            <th>Lisätiedot</th>
+            <th>Toiminnot</th>
           </tr>
         </thead>
         <tbody>
@@ -63,9 +65,15 @@ const BookTable: React.FC<BookTableProps> = ({ data }) => {
               <td>{book.published}</td>
               <td>{book.isbn}</td>
               <td>
-                <Button variant="primary" size="sm" onClick={() => openModal(book)}>
-                  Lisätiedot
-                </Button>
+                {search ? (
+                  <Button variant="success" size="sm" onClick={() => onSendBookToFirebase && onSendBookToFirebase(book)}>
+                    Lähetä
+                  </Button>
+                ) : (
+                  <Button variant="primary" size="sm" onClick={() => openModal(book)}>
+                    Lisätiedot
+                  </Button>
+                )}
               </td>
             </tr>
           ))}
