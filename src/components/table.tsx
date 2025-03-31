@@ -8,7 +8,7 @@ import ModalComponent from './modal';
 interface BookTableProps {
   data: Book[];
   search?: boolean;
-  onSendBookToFirebase?: (book: Book) => void; // Lisätty funktio lähettämistä varten
+  onSendBookToFirebase?: (book: Book) => void;
 }
 
 const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookToFirebase }) => {
@@ -50,6 +50,7 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
       <Table striped bordered hover responsive>
         <thead>
           <tr>
+            <th>Kuva</th>
             <th>Otsikko</th>
             <th>Tekijä</th>
             <th>Vuosi</th>
@@ -60,6 +61,17 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
         <tbody>
           {currentBooks.map((book) => (
             <tr key={book.id}>
+              <td>
+              {book.thumbnail ? (
+                <img
+                  src={book.thumbnail}
+                  alt={book.book}
+                  style={{ maxWidth: '50px', maxHeight: '75px' }}
+                />
+              ) : (
+                <div style={{ width: '50px', height: '75px' }}></div>
+              )}
+              </td>
               <td>{book.book}</td>
               <td>{book.author}</td>
               <td>{book.published}</td>

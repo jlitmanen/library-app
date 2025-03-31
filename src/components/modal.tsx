@@ -18,6 +18,11 @@ const ModalComponent: React.FC<ModalProps> = ({ show, onClose, book }) => {
       <Modal.Body>
         {book && (
           <div>
+            {book.thumbnail && ( // Oletetaan, että Firebase-linkki on book-objektin thumbnail-kentässä
+              <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                <img src={book.thumbnail} alt={book.book} style={{ maxWidth: '200px', maxHeight: '300px' }} />
+              </div>
+            )}
             <p><strong>Otsikko:</strong> {book.book}</p>
             <p><strong>Tekijä:</strong> {book.author}</p>
             <p><strong>Vuosi:</strong> {book.published}</p>

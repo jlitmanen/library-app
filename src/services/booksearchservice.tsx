@@ -6,7 +6,7 @@ import { Book } from '../components/types';
 class BookSearchService {
   async searchBooks(
     searchTerm: string,
-    searchParameter: string, // Säilytä tyyppi
+    searchParameter: string,
     searchFilter: string,
     searchOrder: string
   ): Promise<Book[]> {
@@ -36,19 +36,51 @@ class BookSearchService {
 
   async sendBookToFirebase(book: Book): Promise<void> {
     try {
-      const booksCollection = collection(db, 'books');
-      await addDoc(booksCollection, {
-        id: book.id,
-        author: book.author,
-        book: book.book,
-        description: book.description ? book.description : '',
-        isbn: book.isbn,
-        published: book.published,
-      });
-      alert('Kirja lähetetty Firebaseen onnistuneesti!');
+        const booksCollection = collection(db, 'books');
+        const bookData = {
+            id: book.id,
+            author: book.author,
+            book: book.book,
+            description: book.description ? book.description : '',
+            isbn: book.isbn,
+            published: book.published,
+            thumbnail: book.thumbnail || null, // Käytä null, jos thumbnail on undefined
+        };
+        await addDoc(booksCollection, bookData);
+        console.log('Kirja lähetetty Firebaseen onnistuneesti!');
+        // Käyttäjäystävällisempi ilmoitus tähän.
+    } catch (error: any) {
+        console.error('Virhe kirjan lähettämisessä Firebaseen:', error);
+        if (error.code === 'permission-denied') {
+            // Tietokantaoikeudet puuttuvat
+            console.error('Käyttäjällä ei ole oikeuksia lähettää tietoja Firebaseen.');
+            // Käyttäjäystävällinen virhe ilmoitus.
+        } else if (error.code === 'unavailable') {
+          // Verkkoyhteys virhe.
+          console.error('Verkkoyhteys virhe.');
+          //käyttäjäystävällinen virheilmoitus
+        } else {
+            // Muu virhe
+            console.error('Odottamaton virhe tapahtui.');
+            //käyttäjäystävällinen virheilmoitus
+        }
+    }
+}
+
+  async getBookThumbnail(bookId: string): Promise<string | null> {
+    try {
+      const url = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.volumeInfo && data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) {
+        return data.volumeInfo.imageLinks.thumbnail;
+      } else {
+        return null;
+      }
     } catch (error) {
-      console.error('Virhe kirjan lähettämisessä Firebaseen:', error);
-      alert('Virhe kirjan lähettämisessä Firebaseen.');
+      console.error('Virhe kuvan hakemisessa:', error);
+      return null;
     }
   }
 }

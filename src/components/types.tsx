@@ -1,4 +1,5 @@
 export interface Book {
+    thumbnail: any;
     id: string;
     author: string;
     book: string;
