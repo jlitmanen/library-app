@@ -1,10 +1,11 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { parameters, filters, orders } from '../constants/index';
 import { Book } from './types';
-import { Container, Col, Row, Spinner } from 'react-bootstrap';
+import { Container, Col, Row } from 'react-bootstrap';
 import BookSearchService from '../services/booksearchservice';
 import BookTable from './table';
 import SearchForm from './searchform';
+
 
 interface SearchComponentProps {}
 
@@ -14,7 +15,7 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
   const [searchFilter, setSearchFilter] = useState(filters.all);
   const [searchOrder, setSearchOrder] = useState(orders.relevance);
   const [searchResults, setSearchResults] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Lisää lataustila
   const bookService = new BookSearchService();
 
   const handleSearchTermChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,12 +36,16 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
 
   const handleSearchSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setIsLoading(true);
+    setIsLoading(true); // Aseta lataustila true
     try {
       const books = await bookService.searchBooks(searchTerm, searchParameter, searchFilter, searchOrder);
       setSearchResults(books);
+    } catch (error:any) {
+      console.error('Virhe haussa:', error);
+      // Näytä virheviesti käyttäjälle
+      alert('Haku epäonnistui: ' + error.message);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Aseta lataustila false
     }
   };
 
@@ -62,24 +67,17 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
             searchParameter={searchParameter}
             searchFilter={searchFilter}
             searchOrder={searchOrder}
-            isLoading={isLoading}
             onSearchTermChange={handleSearchTermChange}
             onParameterChange={handleParameterChange}
             onFilterChange={handleFilterChange}
             onOrderChange={handleOrderChange}
             onSearchSubmit={handleSearchSubmit}
             onClearSearch={handleClearSearch}
+            isLoading={isLoading}
           />
         </Col>
         <Col sm={8}>
-          {isLoading && (
-            <div className="text-center">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Ladataan...</span>
-              </Spinner>
-            </div>
-          )}
-          {searchResults.length > 0 && !isLoading && (
+          {searchResults.length > 0 && (
             <BookTable data={searchResults} search={true} onSendBookToFirebase={handleSendBookToFirebase} />
           )}
         </Col>

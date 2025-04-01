@@ -5,13 +5,15 @@ import { onAuthStateChanged, User, signOut } from 'firebase/auth';
 interface AuthContextProps {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  logout: () => Promise<void>; // Lisää logout funktio
+  logout: () => Promise<void>;
+  loading: boolean; // Lisää loading tila
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   setUser: () => {},
-  logout: async () => {}, // Lisää tyhjä funktio oletusarvoksi
+  logout: async () => {},
+  loading: true, // Aseta oletusarvoksi true
 });
 
 interface AuthProviderProps {
@@ -20,10 +22,12 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Lisää loading tila
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setLoading(false); // Aseta loading false, kun tila on määritetty
     });
 
     return () => unsubscribe();
@@ -32,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await signOut(auth);
-      setUser(null); // Päivitä käyttäjän tila
+      setUser(null);
     } catch (error) {
       console.error('Virhe uloskirjautumisessa:', error);
       alert('Virhe uloskirjautumisessa.');
@@ -40,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

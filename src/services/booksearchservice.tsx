@@ -67,22 +67,6 @@ class BookSearchService {
     }
 }
 
-  async getBookThumbnail(bookId: string): Promise<string | null> {
-    try {
-      const url = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.volumeInfo && data.volumeInfo.imageLinks && data.volumeInfo.imageLinks.thumbnail) {
-        return data.volumeInfo.imageLinks.thumbnail;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error('Virhe kuvan hakemisessa:', error);
-      return null;
-    }
-  }
 }
 
 export default BookSearchService;

@@ -13,15 +13,17 @@ const LoginFormModal: React.FC<LoginFormModalProps> = ({ show, onHide }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setUser } = useAuth(); // Käytä setUser funktiota AuthContextista
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
+    setError(''); // Nollaa virheviesti ennen kirjautumista
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user); // Päivitä käyttäjän tila AuthContextissa
-      onHide(); // Sulje modaali
-    } catch (error) {
-      console.error('Virhe kirjautumisessa:', error);
-      alert('Virhe kirjautumisessa.');
+      setUser(userCredential.user);
+      onHide();
+    } catch (err: any) {
+      console.error('Virhe kirjautumisessa:', err);
+      setError(err.message); // Aseta virheviesti
     }
   };
 
@@ -41,6 +43,7 @@ const LoginFormModal: React.FC<LoginFormModalProps> = ({ show, onHide }) => {
             <Form.Control type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
           </Form.Group>
         </Form>
+        {error && <p className="text-danger">{error}</p>} {/* Näytä virheviesti */}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
