@@ -77,9 +77,11 @@ const SearchComponent: React.FC<SearchComponentProps> = () => {
           />
         </Col>
         <Col sm={8}>
-          {searchResults.length > 0 && (
+          {isLoading ? (
+            <p>Ladataan...</p> // Näytä latausindikaattori
+          ) : searchResults.length > 0 ? (
             <BookTable data={searchResults} search={true} onSendBookToFirebase={handleSendBookToFirebase} />
-          )}
+          ) : null}
         </Col>
       </Row>
     </Container>
