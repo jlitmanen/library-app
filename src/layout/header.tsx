@@ -9,9 +9,11 @@ const Header: React.FC = () => {
     <Navbar bg="dark" variant="dark">
       <Container>
         <Navbar.Brand href="/">JE Library</Navbar.Brand>
-        <Nav className="me-auto">
-          <Nav.Link href="/search">Haku</Nav.Link>
-        </Nav>
+        {user && (
+          <Nav className="me-auto">
+            <Nav.Link href="/search">Haku</Nav.Link>
+          </Nav>
+        )}
         {user ? (
           <div>
             <Navbar.Text className="me-2">

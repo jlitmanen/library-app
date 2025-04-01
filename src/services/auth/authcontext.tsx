@@ -6,14 +6,16 @@ interface AuthContextProps {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => Promise<void>;
-  loading: boolean; // Lisää loading tila
+  loading: boolean;
+  error: Error | null; // Lisää virhetila
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   setUser: () => {},
   logout: async () => {},
-  loading: true, // Aseta oletusarvoksi true
+  loading: true,
+  error: null,
 });
 
 interface AuthProviderProps {
@@ -22,29 +24,42 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Lisää loading tila
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null); // Lisää virhetila
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false); // Aseta loading false, kun tila on määritetty
-    });
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        setUser(user);
+        setLoading(false);
+        setError(null);
+      },
+      (error) => {
+        setError(error);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
 
   const logout = async () => {
+    setLoading(true);
+    setError(null);
     try {
       await signOut(auth);
       setUser(null);
-    } catch (error) {
+    } catch (error: any) {
+      setError(error);
       console.error('Virhe uloskirjautumisessa:', error);
-      alert('Virhe uloskirjautumisessa.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, logout, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

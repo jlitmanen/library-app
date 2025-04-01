@@ -13,12 +13,14 @@ function Home() {
   const bookService = new BookService(); // Luo BookService-instanssi
 
   useEffect(() => {
-    async function fetchData() {
-      const fetchedBooks = await bookService.fetchBooks(user);
-      setBooks(fetchedBooks);
+    if(user) {
+      async function fetchData() {
+        const fetchedBooks = await bookService.fetchBooks(user);
+        setBooks(fetchedBooks);
+      }
+  
+      fetchData();
     }
-
-    fetchData();
   }, [user, bookService]); // Lisää bookService riippuvuudeksi
 
   const filteredBooks = bookService.filterBooks(books, searchTerm);
