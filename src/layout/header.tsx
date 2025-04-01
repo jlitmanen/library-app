@@ -1,7 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import { useAuth } from '../services/auth/authcontext';
-import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { user, logout, loading } = useAuth();
