@@ -4,6 +4,9 @@ import Button from 'react-bootstrap/Button';
 import { Book } from './types';
 import PaginationComponent from './pagination';
 import ModalComponent from './modal';
+import { db } from '../../firebase'; // Tuo Firestore-instanssi
+import { collection, addDoc } from 'firebase/firestore';
+import { useAuth } from '../services/auth/authcontext'; // Tuo useAuth-hook
 
 interface BookTableProps {
   data: Book[];
@@ -17,6 +20,7 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(5);
   const maxPageNumbers = 5;
+  const { user } = useAuth(); // Käytä useAuth-hookkia
 
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
@@ -41,6 +45,24 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
     setCurrentPage(1);
   };
 
+  const handleAddReadBook = async (book: Book) => {
+    if (!user) {
+      alert('Kirjaudu sisään lisätäksesi kirjan luetuksi.');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, 'read'), {
+        user: user.uid,
+        book: book,
+      });
+      alert('Kirja lisätty luettuihin kirjoihin.');
+    } catch (error) {
+      console.error('Virhe kirjan lisäämisessä luettuihin kirjoihin:', error);
+      alert('Virhe kirjan lisäämisessä luettuihin kirjoihin.');
+    }
+  };
+
   if (data.length === 0) {
     return <p>Kirjaudu sisään nähdäksesi kirjat!</p>;
   }
@@ -62,15 +84,15 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
           {currentBooks.map((book) => (
             <tr key={book.id}>
               <td>
-              {book.thumbnail ? (
-                <img
-                  src={book.thumbnail}
-                  alt={book.book}
-                  style={{ maxWidth: '50px', maxHeight: '75px' }}
-                />
-              ) : (
-                <div style={{ width: '50px', height: '75px' }}></div>
-              )}
+                {book.thumbnail ? (
+                  <img
+                    src={book.thumbnail}
+                    alt={book.book}
+                    style={{ maxWidth: '50px', maxHeight: '75px' }}
+                  />
+                ) : (
+                  <div style={{ width: '50px', height: '75px' }}></div>
+                )}
               </td>
               <td>{book.book}</td>
               <td>{book.author}</td>
@@ -82,9 +104,14 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
                     Lähetä
                   </Button>
                 ) : (
-                  <Button variant="primary" size="sm" onClick={() => openModal(book)}>
-                    Lisätiedot
-                  </Button>
+                  <>
+                    <Button variant="primary" size="sm" onClick={() => openModal(book)}>
+                      Lisätiedot
+                    </Button>
+                    <Button variant="info" size="sm" onClick={() => handleAddReadBook(book)}>
+                      Lisää luetuksi
+                    </Button>
+                  </>
                 )}
               </td>
             </tr>

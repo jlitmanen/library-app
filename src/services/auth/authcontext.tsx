@@ -2,12 +2,24 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { auth } from '../../../firebase';
 import { onAuthStateChanged, User, signOut } from 'firebase/auth';
 
+interface ErrorMessageProps {
+  error: Error | null;
+}
+
+const ErrorMessage: React.FC<ErrorMessageProps> = ({ error }) => {
+  if (!error) {
+    return null;
+  }
+
+  return <div style={{ color: 'red' }}>{error.message}</div>;
+};
+
 interface AuthContextProps {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => Promise<void>;
   loading: boolean;
-  error: Error | null; // Lisää virhetila
+  error: Error | null;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -25,7 +37,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null); // Lisää virhetila
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
@@ -61,6 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider value={{ user, setUser, logout, loading, error }}>
       {children}
+      <ErrorMessage error={error} />
     </AuthContext.Provider>
   );
 };
