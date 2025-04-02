@@ -1,5 +1,6 @@
 import { FaRegCircleXmark, FaCirclePlus, FaBars } from "react-icons/fa6";
 import { Book } from "./types";
+import { useState } from "react";
 
 export const BookTableRow: React.FC<{ book: Book, search: boolean, showActions: boolean, onSendBookToFirebase?: (book: Book) => void, openModal: (book: Book) => void, handleAddReadBook: (book: Book) => void }> = ({ book, search, showActions, onSendBookToFirebase, openModal, handleAddReadBook }) => {
     const [showMenu, setShowMenu] = useState(false);
