@@ -12,7 +12,13 @@ const Header: React.FC = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="md">
       <Container>
-        <Navbar.Brand href="/">EJ Lib</Navbar.Brand>
+        <Navbar.Brand href="/">
+          <img
+            src={"/android-chrome-192x192.png"}
+            style={{ maxWidth: '30px', marginRight: '5px'}}
+          />
+          Lib
+          </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           {user && 
