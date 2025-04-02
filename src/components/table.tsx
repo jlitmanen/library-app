@@ -7,6 +7,7 @@ import ModalComponent from './modal';
 import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '../services/auth/authcontext';
+import { FaRegCircleXmark } from "react-icons/fa6";
 
 interface BookTableProps {
   data: Book[];
@@ -127,7 +128,11 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, showActions
                     style={{ maxWidth: '50px', maxHeight: '75px' }}
                   />
                 ) : (
-                  <div style={{ width: '50px', height: '75px' }}></div>
+                  <div style={{alignContent: 'center' }} aria-describedby='not found'>
+                    <h1>
+                      <FaRegCircleXmark />
+                    </h1>
+                  </div>
                 )}
               </td>
               <td>{book.book}</td>

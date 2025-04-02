@@ -78,26 +78,26 @@ const PaginationComponent: React.FC<PaginationProps> = ({
 
   return (
     <Row className="justify-content-center align-items-center">
-      <Col xs={12} md={6} className="mb-3">
-        <Form.Group>
-            <FormControl
-                as="select"
-                value={booksPerPage}
-                onChange={handleBooksPerPageChange}
-            >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={100}>100</option>
-            </FormControl>    
-
-            <Pagination className="justify-content-center">
+      <Col xs={12} className="d-flex justify-content-center align-items-center">
+        <Form.Group className="d-flex align-items-center">
+          <FormControl
+            as="select"
+            value={booksPerPage}
+            onChange={handleBooksPerPageChange}
+            className="mr-2"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={100}>100</option>
+          </FormControl>
+          <Pagination className="mb-0">
             <Pagination.First onClick={() => onPageChange(1)} disabled={currentPage === 1} />
             <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} />
             {renderPageNumbers()}
             <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} />
             <Pagination.Last onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages} />
-            </Pagination>
+          </Pagination>
         </Form.Group>
       </Col>
     </Row>
