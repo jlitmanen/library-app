@@ -5,36 +5,28 @@ import { useAuth } from '../services/auth/authcontext';
 const Header: React.FC = () => {
   const { user, logout, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <Navbar bg="dark" variant="dark">
-        <Container>
-          <Navbar.Brand href="/">JE Library</Navbar.Brand>
-          <Navbar.Text className="me-2">Loading...</Navbar.Text>
-        </Container>
-      </Navbar>
-    );
-  }
-
   return (
-    <Navbar bg="dark" variant="dark">
+    <Navbar bg="dark" variant="dark" expand="md">
       <Container>
-        <Navbar.Brand href="/">JE Library</Navbar.Brand>
-        {user && (
+        <Navbar.Brand href="/">EJ Lib</Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/search">Haku</Nav.Link>
+            {user && <Nav.Link href="/search">Haku</Nav.Link>}
           </Nav>
-        )}
-        {user ? (
-          <div>
-              <Nav.Link href="/reads">
-                {user.email}
-              </Nav.Link>
-            <Button variant="outline-light" onClick={logout}>Kirjaudu ulos</Button>
-          </div>
-        ) : (
-          <Nav.Link href="/login">Kirjaudu</Nav.Link>
-        )}
+          <Nav>
+            {loading ? (
+              <Navbar.Text className="me-2">Loading...</Navbar.Text>
+            ) : user ? (
+              <>
+                <Nav.Link href="/reads">{user.email}</Nav.Link>
+                <Button variant="outline-light" onClick={logout}>Kirjaudu ulos</Button>
+              </>
+            ) : (
+              <Nav.Link href="/login">Kirjaudu</Nav.Link>
+            )}
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );

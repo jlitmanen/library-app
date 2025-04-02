@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <Container>
         <Row>
             <Col className="text-center text-light">
-            <p>&copy; {new Date().getFullYear()} <a href="https://github.com/jlitmanen/library-app" target='_blank'>JE Library.</a></p>
+            <p>&copy; {new Date().getFullYear()} <a href="https://github.com/jlitmanen/library-app" target='_blank'>EJ Lib.</a></p>
             </Col>
         </Row>
     </Container>

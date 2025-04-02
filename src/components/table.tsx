@@ -4,29 +4,52 @@ import Button from 'react-bootstrap/Button';
 import { Book } from './types';
 import PaginationComponent from './pagination';
 import ModalComponent from './modal';
-import { db } from '../../firebase'; // Tuo Firestore-instanssi
+import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import { useAuth } from '../services/auth/authcontext'; // Tuo useAuth-hook
+import { useAuth } from '../services/auth/authcontext';
 
 interface BookTableProps {
   data: Book[];
   search?: boolean;
+  showActions?: boolean;
   onSendBookToFirebase?: (book: Book) => void;
 }
 
-const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookToFirebase }) => {
+const BookTable: React.FC<BookTableProps> = ({ data, search = false, showActions = true, onSendBookToFirebase }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [booksPerPage, setBooksPerPage] = useState(5);
   const maxPageNumbers = 5;
-  const { user } = useAuth(); // Käytä useAuth-hookkia
+  const { user } = useAuth();
+  const [sortColumn, setSortColumn] = useState<'book' | 'published' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  const sortedData = React.useMemo(() => {
+    let sortableData = [...data];
+    if (sortColumn !== null) {
+      sortableData.sort((a, b) => {
+        let comparison = 0;
+        if (sortColumn === 'book') {
+          comparison = a.book.localeCompare(b.book);
+        } else if (sortColumn === 'published') {
+          // Käsittele published-kenttä merkkijonona
+          const publishedA = String(a.published || '');
+          const publishedB = String(b.published || '');
+          comparison = publishedA.localeCompare(publishedB);
+        }
+
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
+    }
+    return sortableData;
+  }, [data, sortColumn, sortDirection]);
 
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
-  const currentBooks = data.slice(indexOfFirstBook, indexOfLastBook);
+  const currentBooks = sortedData.slice(indexOfFirstBook, indexOfLastBook);
 
-  const totalPages = Math.ceil(data.length / booksPerPage);
+  const totalPages = Math.ceil(sortedData.length / booksPerPage);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -52,7 +75,7 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
     }
 
     try {
-      await addDoc(collection(db, 'read'), {
+      await addDoc(collection(db, 'reads'), {
         user: user.uid,
         book: book,
       });
@@ -60,6 +83,15 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
     } catch (error) {
       console.error('Virhe kirjan lisäämisessä luettuihin kirjoihin:', error);
       alert('Virhe kirjan lisäämisessä luettuihin kirjoihin.');
+    }
+  };
+
+  const handleSort = (column: 'book' | 'published') => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
     }
   };
 
@@ -73,9 +105,13 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
         <thead>
           <tr>
             <th>Kuva</th>
-            <th>Otsikko</th>
+            <th onClick={() => handleSort('book')} style={{ cursor: 'pointer' }}>
+              Otsikko {sortColumn === 'book' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </th>
             <th>Tekijä</th>
-            <th>Vuosi</th>
+            <th onClick={() => handleSort('published')} style={{ cursor: 'pointer' }}>
+              Vuosi {sortColumn === 'published' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </th>
             <th>ISBN</th>
             <th>Toiminnot</th>
           </tr>
@@ -108,9 +144,11 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, onSendBookT
                     <Button variant="primary" size="sm" onClick={() => openModal(book)}>
                       Lisätiedot
                     </Button>
-                    <Button variant="info" size="sm" onClick={() => handleAddReadBook(book)}>
-                      Lisää luetuksi
-                    </Button>
+                    {showActions && (
+                      <Button variant="info" size="sm" onClick={() => handleAddReadBook(book)}>
+                        Lisää luetuksi
+                      </Button>
+                    )}
                   </>
                 )}
               </td>
