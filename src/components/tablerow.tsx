@@ -55,8 +55,4 @@ export const BookTableRow: React.FC<{ book: Book, search: boolean, showActions: 
       </tr>
     );
   };
-
-function useState(arg0: boolean): [any, any] {
-    throw new Error("Function not implemented.");
-}
   

@@ -8,7 +8,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '../services/auth/authcontext';
 
 import { FaRegCircleXmark } from "react-icons/fa6";
-import { FaCirclePlus, FaRegCircleCheck, FaBars } from "react-icons/fa6";
+import { FaCirclePlus, FaBars } from "react-icons/fa6";
 
 interface BookTableProps {
   data: Book[];
