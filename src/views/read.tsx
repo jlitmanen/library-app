@@ -3,7 +3,7 @@ import { db } from '../../firebase';
 import { collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
 import { useAuth } from '../services/auth/authcontext';
 import { Book } from '../components/types';
-import BookTable from '../components/table';
+import BookTable from '../components/css/table';
 
 const ReadBooks: React.FC = () => {
   const { user } = useAuth();

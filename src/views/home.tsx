@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Form, FormControl, Row, Col, Container } from 'react-bootstrap';
-import BookTable from '../components/table';
+import BookTable from '../components/css/table';
 import { Book } from '../components/types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from '../services/auth/authcontext';

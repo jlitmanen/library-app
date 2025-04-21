@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import Table from 'react-bootstrap/Table';
-import { Book } from './types';
-import PaginationComponent from './pagination';
-import ModalComponent from './modal';
-import { db } from '../../firebase';
+import { Book } from '../types';
+import PaginationComponent from '../pagination';
+import ModalComponent from '../modal';
+import { db } from '../../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
-import { useAuth } from '../services/auth/authcontext';
+import { useAuth } from '../../services/auth/authcontext';
 
 import { FaRegCircleXmark } from "react-icons/fa6";
 import { FaCirclePlus, FaBars } from "react-icons/fa6";
+
+import './table.css';
 
 interface BookTableProps {
   data: Book[];
@@ -157,19 +159,19 @@ const BookTable: React.FC<BookTableProps> = ({ data, search = false, showActions
     <>
       <Table striped bordered hover responsive>
         <thead>
-          <tr>
-            <th>Kuva</th>
-            <th onClick={() => handleSort('book')} style={{ cursor: 'pointer' }}>
-              Otsikko {sortColumn === 'book' && (sortDirection === 'asc' ? '▲' : '▼')}
-            </th>
-            <th>Tekijä</th>
-            <th onClick={() => handleSort('published')} style={{ cursor: 'pointer' }}>
-              Vuosi {sortColumn === 'published' && (sortDirection === 'asc' ? '▲' : '▼')}
-            </th>
-            <th>ISBN</th>
-            <th>Toiminnot</th>
-          </tr>
-        </thead>
+            <tr>
+              <th className="column-thumbnail">Kuva</th>
+              <th className="column-title" onClick={() => handleSort('book')} style={{ cursor: 'pointer' }}>
+                Otsikko {sortColumn === 'book' && (sortDirection === 'asc' ? '▲' : '▼')}
+              </th>
+              <th className="column-author">Tekijä</th>
+              <th className="column-published" onClick={() => handleSort('published')} style={{ cursor: 'pointer' }}>
+                Vuosi {sortColumn === 'published' && (sortDirection === 'asc' ? '▲' : '▼')}
+              </th>
+              <th className="column-isbn">ISBN</th>
+              <th className="column-actions">Toiminnot</th>
+            </tr>
+          </thead>
         <tbody>
           {currentBooks.map((book) => (
             <BookTableRow

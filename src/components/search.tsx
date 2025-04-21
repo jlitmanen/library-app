@@ -3,7 +3,7 @@ import { parameters, filters, orders } from '../constants/index';
 import { Book } from './types';
 import { Container, Col, Row } from 'react-bootstrap';
 import BookSearchService from '../services/booksearchservice';
-import BookTable from './table';
+import BookTable from './css/table';
 import SearchForm from './searchform';
 
 
