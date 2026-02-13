@@ -1,37 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Search, ScanLine, Plus, Loader2, FileText } from "lucide-react";
 import pb from "../pocketbase";
 import BulkImportModal from "./BulkImportModal";
+import BarcodeScanner from "./BarcodeScanner"; // Import your scanner component
 
 export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
-  const [searchType, setSearchType] = useState("all"); // 'all', 'title', 'author', 'isbn'
+  const [searchType, setSearchType] = useState("all");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showBulk, setShowBulk] = useState(false);
+  const [showScanner, setShowScanner] = useState(false); // New state
+
+  // Logic to handle the scanned barcode
+  const handleBarcodeScan = (decodedText) => {
+    setSearchType("isbn");
+    setQuery(decodedText);
+    setShowScanner(false);
+    // The search is triggered by the useEffect below when query changes
+  };
+
+  // Automatically trigger search when query is updated via scanner
+  useEffect(() => {
+    if (searchType === "isbn" && query.length > 8) {
+      handleSearch();
+    }
+  }, [query]);
 
   const handleSearch = async () => {
     if (!query) return;
     setLoading(true);
 
-    // 1. Get your key from environment variables
     const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_KEY;
-
-    // 2. Build the specific query
     let q = query;
     if (searchType === "title") q = `intitle:${query}`;
     if (searchType === "author") q = `inauthor:${query}`;
     if (searchType === "isbn") q = `isbn:${query.replace(/-/g, "")}`;
 
     try {
-      // 3. Append &key= to the URL
       const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=6&key=${API_KEY}`;
       const res = await fetch(url);
 
       if (res.status === 429) {
-        alert(
-          "Rate limit reached. Please wait a minute or check your Google Cloud Console quota.",
-        );
+        alert("Rate limit reached. Please wait a minute.");
         setLoading(false);
         return;
       }
@@ -68,6 +79,14 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+      {/* Render Barcode Scanner Overlay */}
+      {showScanner && (
+        <BarcodeScanner
+          onScan={handleBarcodeScan}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
+
       <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-8 border-b border-slate-100 flex justify-between items-center">
           <h3 className="text-xl font-black">Find New Books</h3>
@@ -77,7 +96,6 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
         </div>
 
         <div className="p-8 flex-1 overflow-y-auto no-scrollbar">
-          {/* Search Controls */}
           <div className="space-y-4 mb-8">
             <div className="flex gap-2">
               {["all", "title", "author", "isbn"].map((t) => (
@@ -93,16 +111,8 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
                 onClick={() => setShowBulk(true)}
                 className="ml-auto flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest"
               >
-                <FileText size={14} /> Bulk Import
+                <FileText size={14} /> Bulk
               </button>
-
-              {showBulk && (
-                <BulkImportModal
-                  activeLib={activeLib}
-                  onClose={() => setShowBulk(false)}
-                  onComplete={onAdded}
-                />
-              )}
             </div>
 
             <div className="flex gap-2">
@@ -115,6 +125,13 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
+                {/* Barcode Trigger Button inside Search Bar */}
+                <button
+                  onClick={() => setShowScanner(true)}
+                  className="text-indigo-600 hover:bg-indigo-50 p-1 rounded-lg transition-colors"
+                >
+                  <ScanLine size={20} />
+                </button>
               </div>
               <button
                 onClick={handleSearch}
@@ -125,7 +142,6 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
             </div>
           </div>
 
-          {/* Results List */}
           <div className="grid grid-cols-1 gap-3">
             {results.map((b, i) => (
               <div
@@ -151,6 +167,14 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
           </div>
         </div>
       </div>
+
+      {showBulk && (
+        <BulkImportModal
+          activeLib={activeLib}
+          onClose={() => setShowBulk(false)}
+          onComplete={onAdded}
+        />
+      )}
     </div>
   );
 }
