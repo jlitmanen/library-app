@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { X, FileText, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { X, FileText, Loader2, CheckCircle2 } from "lucide-react";
+
 import pb from "../pocketbase";
 
 export default function BulkImportModal({ activeLib, onClose, onComplete }) {
@@ -56,7 +57,7 @@ export default function BulkImportModal({ activeLib, onClose, onComplete }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[110] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-110 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">

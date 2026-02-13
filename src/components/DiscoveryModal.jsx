@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { X, Search, ScanLine, Plus, Loader2, FileText } from "lucide-react";
-import pb from "../pocketbase";
+
 import BulkImportModal from "./BulkImportModal";
-import BarcodeScanner from "./BarcodeScanner"; // Import your scanner component
+import BarcodeScanner from "./BarcodeScanner";
+
+import pb from "../pocketbase";
 
 export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
   const [searchType, setSearchType] = useState("all");
@@ -78,7 +80,7 @@ export default function DiscoveryModal({ activeLib, onClose, onAdded }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-100 flex items-center justify-center p-4">
       {/* Render Barcode Scanner Overlay */}
       {showScanner && (
         <BarcodeScanner

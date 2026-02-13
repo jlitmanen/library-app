@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { X, Save, Upload, Image as ImageIcon } from "lucide-react";
+import { useState } from "react";
+import { X, Upload, Image as ImageIcon } from "lucide-react";
+
 import pb from "../pocketbase";
 
 export default function EditBookModal({ book, onSave, onClose }) {
@@ -28,7 +29,7 @@ export default function EditBookModal({ book, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-110 flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-8 border-b border-slate-50 flex justify-between items-center">
           <h3 className="text-xl font-black italic tracking-tight">
@@ -45,7 +46,7 @@ export default function EditBookModal({ book, onSave, onClose }) {
         <div className="p-8 overflow-y-auto space-y-6">
           {/* Cover Image Section */}
           <div className="flex gap-6 items-start">
-            <div className="w-24 h-32 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0 border border-slate-200">
+            <div className="w-24 h-32 bg-slate-100 rounded-xl overflow-hidden shrink-0 border border-slate-200">
               {uploadFile || formData.thumbnail ? (
                 <img
                   src={

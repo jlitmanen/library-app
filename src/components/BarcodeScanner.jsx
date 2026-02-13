@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { X } from "lucide-react";
 
@@ -24,7 +24,7 @@ export default function BarcodeScanner({ onScan, onClose }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black z-[100] flex flex-col">
+    <div className="fixed inset-0 bg-black z-100 flex flex-col">
       <div className="p-4 flex justify-between items-center text-white">
         <h3 className="font-bold uppercase tracking-widest text-xs">
           Scan ISBN Barcode

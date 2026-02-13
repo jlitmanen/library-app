@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import pb from "../pocketbase";
+import { useState } from "react";
 import { FileText } from "lucide-react";
+
+import pb from "../pocketbase";
 
 export default function AuthModal({ onAuth }) {
   const [email, setEmail] = useState("");
